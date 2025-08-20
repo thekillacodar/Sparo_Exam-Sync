@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamSync - Examination Timetable Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        accent: '#F59E0B'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .mobile-container {
+            max-width: 414px;
+            margin: 0 auto;
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .notification-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .exam-card {
+            transition: all 0.3s ease;
+        }
+        
+        .exam-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .chatbot-message {
+            animation: messageSlide 0.3s ease-out;
+        }
+        
+        @keyframes messageSlide {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="mobile-container bg-white dark:bg-gray-800">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="min-h-screen flex flex-col justify-center px-6 py-12 bg-gradient-to-br from-primary to-secondary">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-10 h-10 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">ExamSync</h1>
+                <p class="text-blue-100">Smart Examination Management</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <input type="email" id="loginEmail" placeholder="Email Address" 
+                           class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50">
+                </div>
+                <div>
+                    <input type="password" id="loginPassword" placeholder="Password" 
+                           class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50">
+                </div>
+                
+                <button onclick="login()" class="w-full bg-white text-primary font-semibold py-3 rounded-lg hover:bg-gray-100 transition-colors">
+                    Sign In
+                </button>
+                
+                <div class="flex items-center my-4">
+                    <div class="flex-1 border-t border-white/20"></div>
+                    <span class="px-4 text-white/70 text-sm">or</span>
+                    <div class="flex-1 border-t border-white/20"></div>
+                </div>
+                
+                <button onclick="googleLogin()" class="w-full bg-white/10 border border-white/20 text-white font-semibold py-3 rounded-lg hover:bg-white/20 transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+                
+                <div class="text-center mt-6">
+                    <p class="text-white/70 text-sm">Demo Credentials:</p>
+                    <p class="text-white/90 text-xs mt-1">Student: student@exam.com / Admin: admin@exam.com</p>
+                    <p class="text-white/90 text-xs">Password: demo123</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Container -->
+        <div id="mainApp" class="hidden">
+            <!-- Header -->
+            <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between px-4 py-3">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-semibold text-gray-900 dark:text-white">ExamSync</h1>
+                        <span id="userRole" class="ml-2 px-2 py-1 text-xs bg-primary text-white rounded-full"></span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <svg id="darkModeIcon" class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                            </svg>
+                        </button>
+                        <div class="relative">
+                            <button onclick="showNotifications()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 relative">
+                                <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                                </svg>
+                                <span id="notificationBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center notification-badge">3</span>
+                            </button>
+                        </div>
+                        <button onclick="logout()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Navigation Tabs -->
+            <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex">
+                    <button onclick="showTab('dashboard')" class="tab-btn flex-1 py-3 px-4 text-center text-sm font-medium text-primary border-b-2 border-primary">
+                        Dashboard
+                    </button>
+                    <button onclick="showTab('timetable')" class="tab-btn flex-1 py-3 px-4 text-center text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                        Timetable
+                    </button>
+                    <button onclick="showTab('chatbot')" class="tab-btn flex-1 py-3 px-4 text-center text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                        Assistant
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab" class="tab-content p-4">
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Welcome back, <span id="userName">Student</span>!</h2>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm">Here's your exam schedule overview</p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+                        <div class="text-2xl font-bold">5</div>
+                        <div class="text-sm opacity-90">Upcoming Exams</div>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
+                        <div class="text-2xl font-bold">2</div>
+                        <div class="text-sm opacity-90">This Week</div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Exams -->
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Next Exams</h3>
+                    <div class="space-y-3" id="upcomingExams">
+                        <!-- Exam cards will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="mb-6">
+                    <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Quick Actions</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="exportTimetable('pdf')" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-red-700 dark:text-red-300 text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                            📄 Export PDF
+                        </button>
+                        <button onclick="syncCalendar()" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-blue-700 dark:text-blue-300 text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                            📅 Sync Calendar
+                        </button>
+                        <button onclick="showConflicts()" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-yellow-700 dark:text-yellow-300 text-sm font-medium hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
+                            ⚠️ Check Conflicts
+                        </button>
+                        <button onclick="showTab('timetable')" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 text-green-700 dark:text-green-300 text-sm font-medium hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
+                            ➕ Add Exam
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Offline Status -->
+                <div id="offlineStatus" class="hidden bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3 mb-4">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-orange-700 dark:text-orange-300 text-sm">Offline Mode - Data will sync when connected</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timetable Tab -->
+            <div id="timetableTab" class="tab-content hidden p-4">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Examination Timetable</h2>
+                    <button onclick="showAddExamModal()" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors">
+                        + Add Exam
+                    </button>
+                </div>
+
+                <!-- Calendar View -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 mb-4">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-gray-900 dark:text-white" id="currentMonth">December 2024</h3>
+                            <div class="flex space-x-2">
+                                <button onclick="previousMonth()" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                                <button onclick="nextMonth()" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
+                            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                        </div>
+                        <div id="calendarGrid" class="grid grid-cols-7 gap-1">
+                            <!-- Calendar days will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exam List -->
+                <div class="space-y-3" id="examList">
+                    <!-- Exam items will be populated here -->
+                </div>
+            </div>
+
+            <!-- Chatbot Tab -->
+            <div id="chatbotTab" class="tab-content hidden flex flex-col h-screen">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">AI Assistant</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Ask me about your exams, schedules, or any questions!</p>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-4 space-y-4" id="chatMessages">
+                    <div class="chatbot-message">
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 max-w-xs">
+                                <p class="text-sm text-gray-900 dark:text-white">Hello! I'm your ExamSync AI assistant. I can help you with:</p>
+                                <ul class="text-xs text-gray-600 dark:text-gray-300 mt-2 space-y-1">
+                                    <li>• Check exam schedules</li>
+                                    <li>• Find conflicts</li>
+                                    <li>• Set reminders</li>
+                                    <li>• Export timetables</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex space-x-2">
+                        <input type="text" id="chatInput" placeholder="Ask me anything about your exams..." 
+                               class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-sm"
+                               onkeypress="if(event.key==='Enter') sendMessage()">
+                        <button onclick="sendMessage()" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="flex flex-wrap gap-2 mt-3">
+                        <button onclick="quickChat('What exams do I have this week?')" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            This week's exams
+                        </button>
+                        <button onclick="quickChat('Check for conflicts')" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            Check conflicts
+                        </button>
+                        <button onclick="quickChat('Export my timetable')" class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            Export timetable
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Exam Modal -->
+        <div id="addExamModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Add New Exam</h3>
+                    <button onclick="closeAddExamModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form onsubmit="addExam(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Course Code</label>
+                        <input type="text" id="courseCode" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white" placeholder="e.g., CS101">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Course Name</label>
+                        <input type="text" id="courseName" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white" placeholder="e.g., Introduction to Programming">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                            <input type="date" id="examDate" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                            <input type="time" id="examTime" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Venue</label>
+                        <input type="text" id="examVenue" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white" placeholder="e.g., Room 101, Main Building">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duration (minutes)</label>
+                        <input type="number" id="examDuration" required min="30" max="300" value="120" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white">
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button type="button" onclick="closeAddExamModal()" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            Add Exam
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Notifications Modal -->
+        <div id="notificationsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md max-h-96 overflow-y-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                    <button onclick="closeNotifications()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-3" id="notificationsList">
+                    <!-- Notifications will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentUser = null;
+        let currentTab = 'dashboard';
+        let exams = [];
+        let notifications = [];
+        let isDarkMode = false;
+        let isOffline = false;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupOfflineDetection();
+            loadSampleData();
+        });
+
+        function initializeApp() {
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'true') {
+                toggleDarkMode();
+            }
+            
+            // Check for saved user session
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showMainApp();
+            }
+        }
+
+        function setupOfflineDetection() {
+            window.addEventListener('online', () => {
+                isOffline = false;
+                document.getElementById('offlineStatus').classList.add('hidden');
+                syncOfflineData();
+            });
+            
+            window.addEventListener('offline', () => {
+                isOffline = true;
+                document.getElementById('offlineStatus').classList.remove('hidden');
+            });
+        }
+
+        function loadSampleData() {
+            // Sample exams data
+            exams = [
+                {
+                    id: 1,
+                    courseCode: 'CS101',
+                    courseName: 'Introduction to Programming',
+                    date: '2024-12-15',
+                    time: '09:00',
+                    venue: 'Room 101, CS Building',
+                    duration: 120,
+                    status: 'upcoming'
+                },
+                {
+                    id: 2,
+                    courseCode: 'MATH201',
+                    courseName: 'Calculus II',
+                    date: '2024-12-17',
+                    time: '14:00',
+                    venue: 'Hall A, Main Building',
+                    duration: 180,
+                    status: 'upcoming'
+                },
+                {
+                    id: 3,
+                    courseCode: 'PHY301',
+                    courseName: 'Quantum Physics',
+                    date: '2024-12-20',
+                    time: '10:30',
+                    venue: 'Lab 205, Physics Building',
+                    duration: 150,
+                    status: 'upcoming'
+                },
+                {
+                    id: 4,
+                    courseCode: 'ENG102',
+                    courseName: 'Technical Writing',
+                    date: '2024-12-22',
+                    time: '11:00',
+                    venue: 'Room 301, Liberal Arts',
+                    duration: 120,
+                    status: 'upcoming'
+                },
+                {
+                    id: 5,
+                    courseCode: 'CHEM201',
+                    courseName: 'Organic Chemistry',
+                    date: '2024-12-25',
+                    time: '13:30',
+                    venue: 'Lab 102, Chemistry Building',
+                    duration: 180,
+                    status: 'upcoming'
+                }
+            ];
+
+            // Sample notifications
+            notifications = [
+                {
+                    id: 1,
+                    title: 'Exam Reminder',
+                    message: 'CS101 exam is tomorrow at 9:00 AM',
+                    type: 'reminder',
+                    time: '2 hours ago',
+                    read: false
+                },
+                {
+                    id: 2,
+                    title: 'Schedule Conflict Detected',
+                    message: 'Potential conflict between MATH201 and PHY301',
+                    type: 'warning',
+                    time: '1 day ago',
+                    read: false
+                },
+                {
+                    id: 3,
+                    title: 'Timetable Synced',
+                    message: 'Your timetable has been synced with Google Calendar',
+                    type: 'success',
+                    time: '2 days ago',
+                    read: true
+                }
+            ];
+        }
+
+        // Authentication functions
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password');
+                return;
+            }
+            
+            // Simulate authentication
+            let role = 'student';
+            let name = 'Student User';
+            
+            if (email.includes('admin')) {
+                role = 'admin';
+                name = 'Admin User';
+            } else if (email.includes('lecturer')) {
+                role = 'lecturer';
+                name = 'Lecturer User';
+            }
+            
+            currentUser = { email, role, name };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            showMainApp();
+        }
+
+        function googleLogin() {
+            // Simulate Google login
+            currentUser = { 
+                email: 'user@gmail.com', 
+                role: 'student', 
+                name: 'Google User' 
+            };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showMainApp();
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            
+            // Clear form
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // Update user info
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
+            
+            // Load dashboard
+            showTab('dashboard');
+            updateDashboard();
+            updateCalendar();
+            updateNotificationBadge();
+        }
+
+        // Tab navigation
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active state from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                btn.classList.add('text-gray-500', 'dark:text-gray-400');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            document.getElementById(tabName + 'Tab').classList.add('fade-in');
+            
+            // Update active tab button
+            event.target.classList.remove('text-gray-500', 'dark:text-gray-400');
+            event.target.classList.add('text-primary', 'border-b-2', 'border-primary');
+            
+            currentTab = tabName;
+            
+            // Load tab-specific content
+            if (tabName === 'timetable') {
+                updateTimetable();
+            }
+        }
+
+        // Dashboard functions
+        function updateDashboard() {
+            const upcomingExamsContainer = document.getElementById('upcomingExams');
+            const nextExams = exams.slice(0, 3); // Show next 3 exams
+            
+            upcomingExamsContainer.innerHTML = nextExams.map(exam => {
+                const examDate = new Date(exam.date + 'T' + exam.time);
+                const timeUntil = getTimeUntil(examDate);
+                
+                return `
+                    <div class="exam-card bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-gray-900 dark:text-white">${exam.courseCode}</h4>
+                            <span class="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">${timeUntil}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">${exam.courseName}</p>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400 space-x-4">
+                            <span>📅 ${formatDate(exam.date)}</span>
+                            <span>🕐 ${exam.time}</span>
+                            <span>📍 ${exam.venue}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Timetable functions
+        function updateTimetable() {
+            updateCalendar();
+            updateExamList();
+        }
+
+        function updateCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            
+            document.getElementById('currentMonth').textContent = 
+                new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const calendarGrid = document.getElementById('calendarGrid');
+            calendarGrid.innerHTML = '';
+            
+            // Empty cells for days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                calendarGrid.innerHTML += '<div class="h-8"></div>';
+            }
+            
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dateString = date.toISOString().split('T')[0];
+                const hasExam = exams.some(exam => exam.date === dateString);
+                
+                calendarGrid.innerHTML += `
+                    <div class="h-8 flex items-center justify-center text-sm ${hasExam ? 'bg-primary text-white rounded-full' : 'text-gray-700 dark:text-gray-300'} ${day === now.getDate() && month === now.getMonth() ? 'font-bold' : ''}">
+                        ${day}
+                    </div>
+                `;
+            }
+        }
+
+        function updateExamList() {
+            const examListContainer = document.getElementById('examList');
+            
+            examListContainer.innerHTML = exams.map(exam => {
+                const examDate = new Date(exam.date + 'T' + exam.time);
+                const isPast = examDate < new Date();
+                
+                return `
+                    <div class="exam-card bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4 ${isPast ? 'opacity-60' : ''}">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <h4 class="font-semibold text-gray-900 dark:text-white">${exam.courseCode}</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">${exam.courseName}</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">${formatDate(exam.date)}</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">${exam.time}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                </svg>
+                                ${exam.venue}
+                            </div>
+                            <div class="flex space-x-2">
+                                ${currentUser.role === 'admin' || currentUser.role === 'lecturer' ? `
+                                    <button onclick="editExam(${exam.id})" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                        </svg>
+                                    </button>
+                                    <button onclick="deleteExam(${exam.id})" class="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 012 0v4a1 1 0 11-2 0V7zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V7a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Exam management
+        function showAddExamModal() {
+            if (currentUser.role === 'student') {
+                alert('Only administrators and lecturers can add exams.');
+                return;
+            }
+            document.getElementById('addExamModal').classList.remove('hidden');
+        }
+
+        function closeAddExamModal() {
+            document.getElementById('addExamModal').classList.add('hidden');
+            document.getElementById('addExamModal').querySelector('form').reset();
+        }
+
+        function addExam(event) {
+            event.preventDefault();
+            
+            const newExam = {
+                id: Date.now(),
+                courseCode: document.getElementById('courseCode').value,
+                courseName: document.getElementById('courseName').value,
+                date: document.getElementById('examDate').value,
+                time: document.getElementById('examTime').value,
+                venue: document.getElementById('examVenue').value,
+                duration: parseInt(document.getElementById('examDuration').value),
+                status: 'upcoming'
+            };
+            
+            // Check for conflicts
+            const conflicts = detectConflicts(newExam);
+            if (conflicts.length > 0) {
+                const conflictMessages = conflicts.map(c => `${c.courseCode} at ${c.time}`).join(', ');
+                if (!confirm(`Conflict detected with: ${conflictMessages}. Add anyway?`)) {
+                    return;
+                }
+            }
+            
+            exams.push(newExam);
+            exams.sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+            
+            // Save to localStorage (simulating offline storage)
+            localStorage.setItem('exams', JSON.stringify(exams));
+            
+            closeAddExamModal();
+            updateTimetable();
+            updateDashboard();
+            
+            // Add success notification
+            addNotification('Exam Added', `${newExam.courseCode} exam has been scheduled successfully`, 'success');
+        }
+
+        function detectConflicts(newExam) {
+            return exams.filter(exam => {
+                if (exam.date !== newExam.date) return false;
+                
+                const examStart = new Date(`${exam.date}T${exam.time}`);
+                const examEnd = new Date(examStart.getTime() + exam.duration * 60000);
+                const newStart = new Date(`${newExam.date}T${newExam.time}`);
+                const newEnd = new Date(newStart.getTime() + newExam.duration * 60000);
+                
+                return (newStart < examEnd && newEnd > examStart);
+            });
+        }
+
+        function editExam(examId) {
+            const exam = exams.find(e => e.id === examId);
+            if (!exam) return;
+            
+            // Pre-fill the modal with exam data
+            document.getElementById('courseCode').value = exam.courseCode;
+            document.getElementById('courseName').value = exam.courseName;
+            document.getElementById('examDate').value = exam.date;
+            document.getElementById('examTime').value = exam.time;
+            document.getElementById('examVenue').value = exam.venue;
+            document.getElementById('examDuration').value = exam.duration;
+            
+            // Remove the exam temporarily for conflict checking
+            exams = exams.filter(e => e.id !== examId);
+            
+            showAddExamModal();
+        }
+
+        function deleteExam(examId) {
+            if (confirm('Are you sure you want to delete this exam?')) {
+                exams = exams.filter(e => e.id !== examId);
+                localStorage.setItem('exams', JSON.stringify(exams));
+                updateTimetable();
+                updateDashboard();
+                addNotification('Exam Deleted', 'Exam has been removed from the timetable', 'info');
+            }
+        }
+
+        // Notifications
+        function showNotifications() {
+            document.getElementById('notificationsModal').classList.remove('hidden');
+            updateNotificationsList();
+        }
+
+        function closeNotifications() {
+            document.getElementById('notificationsModal').classList.add('hidden');
+        }
+
+        function updateNotificationsList() {
+            const notificationsList = document.getElementById('notificationsList');
+            
+            notificationsList.innerHTML = notifications.map(notification => {
+                const iconMap = {
+                    reminder: '🔔',
+                    warning: '⚠️',
+                    success: '✅',
+                    info: 'ℹ️'
+                };
+                
+                return `
+                    <div class="flex items-start p-3 rounded-lg ${notification.read ? 'bg-gray-50 dark:bg-gray-700' : 'bg-blue-50 dark:bg-blue-900/20'} border border-gray-200 dark:border-gray-600">
+                        <div class="text-lg mr-3">${iconMap[notification.type]}</div>
+                        <div class="flex-1">
+                            <h4 class="font-medium text-gray-900 dark:text-white text-sm">${notification.title}</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs mt-1">${notification.message}</p>
+                            <p class="text-gray-500 dark:text-gray-500 text-xs mt-1">${notification.time}</p>
+                        </div>
+                        ${!notification.read ? '<div class="w-2 h-2 bg-blue-500 rounded-full"></div>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateNotificationBadge() {
+            const unreadCount = notifications.filter(n => !n.read).length;
+            const badge = document.getElementById('notificationBadge');
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function addNotification(title, message, type) {
+            const notification = {
+                id: Date.now(),
+                title,
+                message,
+                type,
+                time: 'Just now',
+                read: false
+            };
+            
+            notifications.unshift(notification);
+            updateNotificationBadge();
+        }
+
+        // Chatbot functions
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addChatMessage(message, 'user');
+            input.value = '';
+            
+            // Simulate AI response
+            setTimeout(() => {
+                const response = generateAIResponse(message);
+                addChatMessage(response, 'bot');
+            }, 1000);
+        }
+
+        function quickChat(message) {
+            document.getElementById('chatInput').value = message;
+            sendMessage();
+        }
+
+        function addChatMessage(message, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const isUser = sender === 'user';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chatbot-message';
+            messageDiv.innerHTML = `
+                <div class="flex items-start ${isUser ? 'justify-end' : ''}">
+                    ${!isUser ? `
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    ` : ''}
+                    <div class="max-w-xs ${isUser ? 'bg-primary text-white ml-3' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'} rounded-lg p-3">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                    ${isUser ? `
+                        <div class="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
+                            <svg class="w-4 h-4 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function generateAIResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('exam') && lowerMessage.includes('week')) {
+                const thisWeekExams = getThisWeekExams();
+                if (thisWeekExams.length === 0) {
+                    return "You don't have any exams this week. Great time to prepare for upcoming ones!";
+                }
+                return `You have ${thisWeekExams.length} exam(s) this week:\n${thisWeekExams.map(e => `• ${e.courseCode} on ${formatDate(e.date)} at ${e.time}`).join('\n')}`;
+            }
+            
+            if (lowerMessage.includes('conflict')) {
+                const conflicts = findAllConflicts();
+                if (conflicts.length === 0) {
+                    return "Great news! I didn't find any scheduling conflicts in your timetable.";
+                }
+                return `I found ${conflicts.length} potential conflict(s). Would you like me to suggest alternative times?`;
+            }
+            
+            if (lowerMessage.includes('export')) {
+                return "I can help you export your timetable! You can export as PDF or CSV format. Would you like me to generate a PDF export for you?";
+            }
+            
+            if (lowerMessage.includes('reminder')) {
+                return "I can set up reminders for your exams. By default, you'll get notifications 24 hours and 1 hour before each exam. Would you like to customize these settings?";
+            }
+            
+            if (lowerMessage.includes('next exam')) {
+                const nextExam = getNextExam();
+                if (!nextExam) {
+                    return "You don't have any upcoming exams scheduled.";
+                }
+                return `Your next exam is ${nextExam.courseCode} (${nextExam.courseName}) on ${formatDate(nextExam.date)} at ${nextExam.time} in ${nextExam.venue}.`;
+            }
+            
+            // Default responses
+            const responses = [
+                "I'm here to help with your exam schedule! You can ask me about upcoming exams, conflicts, reminders, or export options.",
+                "Feel free to ask me about your timetable, exam dates, or any scheduling questions you have.",
+                "I can help you check for conflicts, set reminders, or find information about your exams. What would you like to know?",
+                "Let me know if you need help with your exam schedule, conflict detection, or any other timetable-related questions!"
+            ];
+            
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        // Utility functions
+        function getThisWeekExams() {
+            const now = new Date();
+            const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+            const weekEnd = new Date(now.setDate(now.getDate() - now.getDay() + 6));
+            
+            return exams.filter(exam => {
+                const examDate = new Date(exam.date);
+                return examDate >= weekStart && examDate <= weekEnd;
+            });
+        }
+
+        function getNextExam() {
+            const now = new Date();
+            return exams.find(exam => new Date(exam.date + 'T' + exam.time) > now);
+        }
+
+        function findAllConflicts() {
+            const conflicts = [];
+            for (let i = 0; i < exams.length; i++) {
+                for (let j = i + 1; j < exams.length; j++) {
+                    if (detectConflicts(exams[i]).includes(exams[j])) {
+                        conflicts.push([exams[i], exams[j]]);
+                    }
+                }
+            }
+            return conflicts;
+        }
+
+        function getTimeUntil(date) {
+            const now = new Date();
+            const diff = date - now;
+            
+            if (diff < 0) return 'Past';
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            if (days > 0) return `${days}d`;
+            if (hours > 0) return `${hours}h`;
+            return 'Soon';
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Export functions
+        function exportTimetable(format) {
+            if (format === 'pdf') {
+                // Simulate PDF generation
+                const content = generateTimetableContent();
+                downloadFile(content, 'timetable.pdf', 'application/pdf');
+                addNotification('Export Complete', 'Timetable exported as PDF successfully', 'success');
+            } else if (format === 'csv') {
+                const csvContent = generateCSVContent();
+                downloadFile(csvContent, 'timetable.csv', 'text/csv');
+                addNotification('Export Complete', 'Timetable exported as CSV successfully', 'success');
+            }
+        }
+
+        function generateTimetableContent() {
+            return `Examination Timetable - ${currentUser.name}\n\n` +
+                   exams.map(exam => 
+                       `${exam.courseCode} - ${exam.courseName}\n` +
+                       `Date: ${formatDate(exam.date)}\n` +
+                       `Time: ${exam.time}\n` +
+                       `Venue: ${exam.venue}\n` +
+                       `Duration: ${exam.duration} minutes\n\n`
+                   ).join('');
+        }
+
+        function generateCSVContent() {
+            const headers = 'Course Code,Course Name,Date,Time,Venue,Duration\n';
+            const rows = exams.map(exam => 
+                `${exam.courseCode},${exam.courseName},${exam.date},${exam.time},${exam.venue},${exam.duration}`
+            ).join('\n');
+            return headers + rows;
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Calendar sync
+        function syncCalendar() {
+            // Simulate calendar sync
+            setTimeout(() => {
+                addNotification('Calendar Synced', 'Your timetable has been synced with Google Calendar', 'success');
+            }, 1500);
+        }
+
+        // Conflict detection
+        function showConflicts() {
+            const conflicts = findAllConflicts();
+            if (conflicts.length === 0) {
+                alert('No conflicts detected in your timetable!');
+            } else {
+                const conflictList = conflicts.map(([exam1, exam2]) => 
+                    `${exam1.courseCode} and ${exam2.courseCode} on ${formatDate(exam1.date)}`
+                ).join('\n');
+                alert(`Conflicts detected:\n${conflictList}`);
+            }
+        }
+
+        // Dark mode
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDarkMode);
+            
+            const icon = document.getElementById('darkModeIcon');
+            if (isDarkMode) {
+                icon.innerHTML = '<path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>';
+            } else {
+                icon.innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>';
+            }
+        }
+
+        // Calendar navigation
+        function previousMonth() {
+            // Implementation for previous month navigation
+            console.log('Previous month');
+        }
+
+        function nextMonth() {
+            // Implementation for next month navigation
+            console.log('Next month');
+        }
+
+        // Offline data sync
+        function syncOfflineData() {
+            // Simulate syncing offline data when connection is restored
+            console.log('Syncing offline data...');
+            addNotification('Data Synced', 'Your offline changes have been synchronized', 'success');
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97235efa246993f2',t:'MTc1NTcwODQzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
