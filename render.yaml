@@ -1,4 +1,12 @@
 services:
+  - type: static
+    name: exam-sync-frontend
+    buildCommand: npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://exam-sync-backend.onrender.com
+
   - type: web
     name: exam-sync-backend
     runtime: node
@@ -12,7 +20,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: DB_PATH
-        value: /opt/render/project/src/backend/data/exam-sync.db
+        value: ./data/exam-sync.db
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: BCRYPT_ROUNDS
@@ -21,23 +29,3 @@ services:
         value: 900000
       - key: RATE_LIMIT_MAX_REQUESTS
         value: 100
-    disk:
-      name: exam-sync-db
-      mountPath: /opt/render/project/src/backend/data
-      sizeGB: 1
-
-  - type: web
-    name: exam-sync-frontend
-    runtime: static
-    buildCommand: npm run build
-    staticPublishPath: ./dist
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: exam-sync-backend
-          property: host
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html

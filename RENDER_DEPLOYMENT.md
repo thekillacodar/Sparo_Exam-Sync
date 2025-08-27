@@ -1,6 +1,6 @@
-# Render Deployment Guide
+# Render Deployment Guide (Free Tier)
 
-This guide explains how to deploy ExamSync to Render with both backend and frontend services.
+This guide explains how to deploy ExamSync to Render using the free tier services.
 
 ## 🚀 Quick Deployment
 
@@ -13,12 +13,12 @@ This guide explains how to deploy ExamSync to Render with both backend and front
 
 2. **Automatic Service Creation**
    - Render will create two services automatically:
-     - `exam-sync-backend` (Node.js web service)
-     - `exam-sync-frontend` (Static site)
+     - `exam-sync-backend` (Node.js web service - free tier)
+     - `exam-sync-frontend` (Static site - free tier)
 
 3. **Environment Variables**
    - Backend will auto-generate: `JWT_SECRET`, `PORT`
-   - Frontend will get: `VITE_API_URL` from backend service
+   - Frontend will get: `VITE_API_URL` pointing to backend service
 
 ### Option 2: Manual Service Creation
 
@@ -33,14 +33,10 @@ This guide explains how to deploy ExamSync to Render with both backend and front
    ```
    NODE_ENV=production
    JWT_SECRET=your-secure-secret-here
-   DB_PATH=/opt/render/project/src/backend/data/exam-sync.db
+   DB_PATH=./data/exam-sync.db
    JWT_EXPIRES_IN=7d
    BCRYPT_ROUNDS=12
    ```
-
-3. **Persistent Disk**
-   - Mount path: `/opt/render/project/src/backend/data`
-   - Size: 1GB
 
 #### Frontend Service
 1. **Create Static Site**
@@ -114,12 +110,14 @@ node scripts/test-auth.js
 
 ## 🔧 Configuration
 
-### Database Setup on Render
+### Database Setup on Render (Free Tier)
 
-The SQLite database will be stored in a persistent disk at:
+The SQLite database will be stored in the application directory:
 ```
-/opt/render/project/src/backend/data/exam-sync.db
+./data/exam-sync.db
 ```
+
+**Note**: On free tier, the database will be reset when the service restarts. For persistent data, consider upgrading to a paid plan.
 
 ### CORS Configuration
 
@@ -134,7 +132,7 @@ FRONTEND_URL: process.env.FRONTEND_URL || 'https://your-frontend.onrender.com'
 **Backend:**
 - ✅ `NODE_ENV=production`
 - ✅ `JWT_SECRET` (secure random string)
-- ✅ `DB_PATH=/opt/render/project/src/backend/data/exam-sync.db`
+- ✅ `DB_PATH=./data/exam-sync.db`
 - ✅ `FRONTEND_URL` (your frontend URL)
 
 **Frontend:**
@@ -167,8 +165,8 @@ FRONTEND_URL: process.env.FRONTEND_URL || 'https://your-frontend.onrender.com'
 ### Common Issues
 
 **Database Connection Issues:**
-- Check persistent disk is mounted correctly
-- Ensure DB_PATH environment variable is set
+- Check that DB_PATH environment variable is set correctly
+- Ensure the data directory exists and is writable
 
 **CORS Errors:**
 - Verify FRONTEND_URL is set to your frontend service URL
@@ -196,7 +194,6 @@ The application is designed mobile-first and will work well on mobile devices wh
 ## 🔒 Security Notes
 
 - JWT secrets are auto-generated on Render
-- Database is stored in persistent disk
 - HTTPS is enabled by default on Render
 - CORS is configured for your frontend domain
 
@@ -217,5 +214,14 @@ If you encounter issues:
 2. Verify environment variables
 3. Test locally first
 4. Check this documentation
+
+## 💡 Free Tier Limitations
+
+- **Database**: SQLite database resets on service restart
+- **Uptime**: Services may sleep after inactivity
+- **Bandwidth**: Limited monthly bandwidth
+- **Build Time**: Limited build minutes per month
+
+For production use, consider upgrading to a paid plan for persistent database storage and better performance.
 
 Happy deploying! 🚀
