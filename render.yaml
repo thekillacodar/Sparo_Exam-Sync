@@ -1,6 +1,7 @@
 services:
-  - type: static
+  - type: web
     name: exam-sync-frontend
+    runtime: static
     buildCommand: npm run build
     staticPublishPath: ./dist
     envVars:
