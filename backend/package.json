@@ -1,0 +1,42 @@
+{
+  "name": "exam-sync-backend",
+  "version": "1.0.0",
+  "description": "Backend API for ExamSync examination management system",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "jest",
+    "init-db": "node scripts/init-db.js"
+  },
+  "keywords": [
+    "exam",
+    "management",
+    "education",
+    "api",
+    "sqlite"
+  ],
+  "author": "ExamSync Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0",
+    "sqlite3": "^5.1.7",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.4.0",
+    "joi": "^17.13.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0",
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=20.19.2",
+    "npm": ">=10.0.0"
+  }
+}
