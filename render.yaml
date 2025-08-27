@@ -41,9 +41,3 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
-
-environments:
-  - name: production
-    services:
-      - exam-sync-backend
-      - exam-sync-frontend
