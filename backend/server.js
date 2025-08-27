@@ -10,6 +10,11 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import examRoutes from './routes/exams.js';
 import notificationRoutes from './routes/notifications.js';
+import dashboardRoutes from './routes/dashboard.js';
+import exportRoutes from './routes/export.js';
+import aiAssistantRoutes from './routes/ai-assistant.js';
+import calendarRoutes from './routes/calendar.js';
+import offlineSyncRoutes from './routes/offline-sync.js';
 
 // Import middleware
 import { authenticateToken, optionalAuth } from './middleware/auth.js';
@@ -79,6 +84,11 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/exams', examRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/export', exportRoutes);
+app.use('/api/ai-assistant', aiAssistantRoutes);
+app.use('/api/calendar', calendarRoutes);
+app.use('/api/offline-sync', offlineSyncRoutes);
 
 // Protected routes that require authentication
 app.get('/api/profile', authenticateToken, (req, res) => {

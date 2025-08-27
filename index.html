@@ -2,9 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ExamSync">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <title>ExamSync - Examination Timetable Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="mobile-optimizations.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -78,6 +84,11 @@
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <div class="mobile-container bg-white dark:bg-gray-800">
+        <!-- Pull-to-Refresh Indicator -->
+        <div class="pull-refresh-indicator">
+            ⟳
+        </div>
+
         <!-- Login Screen -->
         <div id="loginScreen" class="min-h-screen flex flex-col justify-center px-6 py-12 bg-gradient-to-br from-primary to-secondary">
             <div class="text-center mb-8">
@@ -92,15 +103,15 @@
             
             <div class="space-y-4">
                 <div>
-                    <input type="email" id="loginEmail" placeholder="Email Address" 
-                           class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50">
+                    <input type="email" id="loginEmail" placeholder="Email Address"
+                           class="form-input-mobile w-full bg-white/10 border-white/20 text-white placeholder-white/70 focus:ring-white/50">
                 </div>
                 <div>
-                    <input type="password" id="loginPassword" placeholder="Password" 
-                           class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50">
+                    <input type="password" id="loginPassword" placeholder="Password"
+                           class="form-input-mobile w-full bg-white/10 border-white/20 text-white placeholder-white/70 focus:ring-white/50">
                 </div>
                 
-                <button onclick="login()" class="w-full bg-white text-primary font-semibold py-3 rounded-lg hover:bg-gray-100 transition-colors">
+                <button onclick="login()" class="btn-touch w-full bg-white text-primary font-semibold py-3 rounded-lg hover:bg-gray-100 transition-colors touch-manipulation">
                     Sign In
                 </button>
                 
@@ -110,7 +121,7 @@
                     <div class="flex-1 border-t border-white/20"></div>
                 </div>
                 
-                <button onclick="googleLogin()" class="w-full bg-white/10 border border-white/20 text-white font-semibold py-3 rounded-lg hover:bg-white/20 transition-colors flex items-center justify-center">
+                <button onclick="googleLogin()" class="btn-touch w-full bg-white/10 border border-white/20 text-white font-semibold py-3 rounded-lg hover:bg-white/20 transition-colors flex items-center justify-center touch-manipulation">
                     <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
                         <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -138,20 +149,20 @@
                         <span id="userRole" class="ml-2 px-2 py-1 text-xs bg-primary text-white rounded-full"></span>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <button onclick="toggleDarkMode()" class="btn-touch p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 touch-manipulation">
                             <svg id="darkModeIcon" class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
                             </svg>
                         </button>
                         <div class="relative">
-                            <button onclick="showNotifications()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 relative">
+                            <button onclick="showNotifications()" class="btn-touch p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 relative touch-manipulation">
                                 <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
                                 </svg>
                                 <span id="notificationBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center notification-badge">3</span>
                             </button>
                         </div>
-                        <button onclick="logout()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <button onclick="logout()" class="btn-touch p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 touch-manipulation">
                             <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
                             </svg>
@@ -160,8 +171,8 @@
                 </div>
             </header>
 
-            <!-- Navigation Tabs -->
-            <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+            <!-- Desktop Navigation (Hidden on Mobile) -->
+            <nav class="hidden md:block bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex">
                     <button onclick="showTab('dashboard')" class="tab-btn flex-1 py-3 px-4 text-center text-sm font-medium text-primary border-b-2 border-primary">
                         Dashboard
@@ -184,11 +195,11 @@
 
                 <!-- Quick Stats -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+                    <div class="card-mobile bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white">
                         <div class="text-2xl font-bold">5</div>
                         <div class="text-sm opacity-90">Upcoming Exams</div>
                     </div>
-                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
+                    <div class="card-mobile bg-gradient-to-r from-green-500 to-green-600 p-4 text-white">
                         <div class="text-2xl font-bold">2</div>
                         <div class="text-sm opacity-90">This Week</div>
                     </div>
@@ -206,16 +217,16 @@
                 <div class="mb-6">
                     <h3 class="text-md font-semibold text-gray-900 dark:text-white mb-3">Quick Actions</h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="exportTimetable('pdf')" class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-red-700 dark:text-red-300 text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                        <button onclick="exportTimetable('pdf')" class="btn-touch card-mobile bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 text-red-700 dark:text-red-300 text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors touch-manipulation">
                             📄 Export PDF
                         </button>
-                        <button onclick="syncCalendar()" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-blue-700 dark:text-blue-300 text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
+                        <button onclick="syncCalendar()" class="btn-touch card-mobile bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-3 text-blue-700 dark:text-blue-300 text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors touch-manipulation">
                             📅 Sync Calendar
                         </button>
-                        <button onclick="showConflicts()" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-yellow-700 dark:text-yellow-300 text-sm font-medium hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors">
+                        <button onclick="showConflicts()" class="btn-touch card-mobile bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-3 text-yellow-700 dark:text-yellow-300 text-sm font-medium hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors touch-manipulation">
                             ⚠️ Check Conflicts
                         </button>
-                        <button onclick="showTab('timetable')" class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 text-green-700 dark:text-green-300 text-sm font-medium hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
+                        <button onclick="showTab('timetable')" class="btn-touch card-mobile bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3 text-green-700 dark:text-green-300 text-sm font-medium hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors touch-manipulation">
                             ➕ Add Exam
                         </button>
                     </div>
@@ -1141,6 +1152,65 @@
             console.log('Syncing offline data...');
             addNotification('Data Synced', 'Your offline changes have been synchronized', 'success');
         }
+
+        // Mobile-specific functions
+        function initializeMobileFeatures() {
+            // Add visual feedback to buttons
+            document.querySelectorAll('.btn-touch').forEach(button => {
+                button.addEventListener('touchstart', () => {
+                    button.classList.add('touch-active');
+                }, { passive: true });
+
+                button.addEventListener('touchend', () => {
+                    button.classList.remove('touch-active');
+                }, { passive: true });
+            });
+
+            // Handle keyboard show/hide
+            window.addEventListener('resize', () => {
+                const keyboardSpacer = document.querySelector('.keyboard-spacer');
+                const viewportHeight = window.visualViewport?.height || window.innerHeight;
+                const windowHeight = window.innerHeight;
+                const keyboardVisible = viewportHeight < windowHeight * 0.9;
+
+                if (keyboardVisible && keyboardSpacer) {
+                    keyboardSpacer.classList.add('active');
+                } else if (keyboardSpacer) {
+                    keyboardSpacer.classList.remove('active');
+                }
+            });
+        }
+
+        // Initialize mobile features when DOM is ready
+        document.addEventListener('DOMContentLoaded', initializeMobileFeatures);
     </script>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav md:hidden">
+        <div class="mobile-tabs">
+            <button class="mobile-tab active" onclick="showTab('dashboard')">
+                <svg class="w-5 h-5 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                </svg>
+                <span class="text-xs">Dashboard</span>
+            </button>
+            <button class="mobile-tab" onclick="showTab('timetable')">
+                <svg class="w-5 h-5 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-xs">Schedule</span>
+            </button>
+            <button class="mobile-tab" onclick="showTab('chatbot')">
+                <svg class="w-5 h-5 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-xs">Assistant</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Keyboard Spacer for Mobile -->
+    <div class="keyboard-spacer"></div>
+</div> <!-- Closing mainApp div -->
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97235efa246993f2',t:'MTc1NTcwODQzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

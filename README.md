@@ -185,35 +185,13 @@ exam-sync/
 
 ## 🧪 Testing
 
-### Local Authentication Testing
-
-Test the authentication system before deploying to Render:
-
 ```bash
-# Install dependencies and test locally
-cd backend
-npm install
-npm run init-db  # Creates demo users
-npm run dev      # Starts server
-
-# In another terminal, run tests
-cd ..
-node test-auth-local.js
-```
-
-### Demo Credentials
-
-After running `npm run init-db`, use these credentials:
-
-- **Student**: `student@exam.com` / `demo123`
-- **Admin**: `admin@exam.com` / `demo123`
-- **Lecturer**: `lecturer@exam.com` / `demo123`
-
-### Backend Unit Tests
-
-```bash
+# Backend tests
 cd backend
 npm test
+
+# Integration tests
+npm run test:integration
 ```
 
 ## 🤝 Contributing

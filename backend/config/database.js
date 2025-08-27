@@ -33,6 +33,8 @@ export async function initializeDatabase() {
         last_name TEXT NOT NULL,
         role TEXT NOT NULL CHECK (role IN ('student', 'lecturer', 'admin')),
         is_active BOOLEAN DEFAULT 1,
+        google_tokens TEXT,
+        google_connected BOOLEAN DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )
@@ -85,6 +87,21 @@ export async function initializeDatabase() {
       )
     `;
 
+    // Create offline pending changes table for offline sync
+    const createOfflineChangesTable = `
+      CREATE TABLE IF NOT EXISTS offline_pending_changes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        change_id TEXT UNIQUE NOT NULL,
+        change_type TEXT NOT NULL CHECK (change_type IN ('exam', 'notification')),
+        change_action TEXT NOT NULL,
+        change_data TEXT NOT NULL,
+        user_id INTEGER NOT NULL,
+        device_id TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+      )
+    `;
+
     // Create indexes for better performance
     const createIndexes = `
       CREATE INDEX IF NOT EXISTS idx_exams_date ON exams(date);
@@ -129,6 +146,15 @@ export async function initializeDatabase() {
           return;
         }
         console.log('✅ Conflicts table ready');
+      });
+
+      db.run(createOfflineChangesTable, (err) => {
+        if (err) {
+          console.error('Error creating offline changes table:', err.message);
+          reject(err);
+          return;
+        }
+        console.log('✅ Offline changes table ready');
       });
 
       db.run(createIndexes, (err) => {
