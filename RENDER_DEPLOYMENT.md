@@ -4,47 +4,35 @@ This guide explains how to deploy ExamSync to Render using the free tier service
 
 ## 🚀 Quick Deployment
 
-### Option 1: Using render.yaml (Recommended)
+### Step 1: Deploy Backend (Automatic via render.yaml)
 
 1. **Connect Repository to Render**
    - Go to [render.com](https://render.com)
    - Connect your GitHub repository
    - Render will automatically detect the `render.yaml` file
 
-2. **Automatic Service Creation**
-   - Render will create two services automatically:
+2. **Automatic Backend Service Creation**
+   - Render will create one service automatically:
      - `exam-sync-backend` (Node.js web service - free tier)
-     - `exam-sync-frontend` (Static site - free tier)
 
 3. **Environment Variables**
    - Backend will auto-generate: `JWT_SECRET`, `PORT`
-   - Frontend will get: `VITE_API_URL` pointing to backend service
+   - Database will be stored locally: `./data/exam-sync.db`
 
-### Option 2: Manual Service Creation
+### Step 2: Deploy Frontend (Manual Static Site)
 
-#### Backend Service
-1. **Create Web Service**
-   - Name: `exam-sync-backend`
-   - Runtime: `Node.js 20.x`
-   - Build Command: `npm install`
-   - Start Command: `npm start`
+1. **Create Static Site Service**
+   - Go to Render Dashboard
+   - Click "New" → "Static Site"
+   - Connect to your GitHub repository
 
-2. **Environment Variables**
-   ```
-   NODE_ENV=production
-   JWT_SECRET=your-secure-secret-here
-   DB_PATH=./data/exam-sync.db
-   JWT_EXPIRES_IN=7d
-   BCRYPT_ROUNDS=12
-   ```
+2. **Configure Static Site**
+   - **Name**: `exam-sync-frontend`
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `dist`
+   - **Branch**: `main`
 
-#### Frontend Service
-1. **Create Static Site**
-   - Name: `exam-sync-frontend`
-   - Build Command: `npm run build`
-   - Publish Directory: `dist`
-
-2. **Environment Variables**
+3. **Environment Variables**
    ```
    VITE_API_URL=https://your-backend-service.onrender.com
    ```
@@ -147,14 +135,19 @@ FRONTEND_URL: process.env.FRONTEND_URL || 'https://your-frontend.onrender.com'
    git push origin main
    ```
 
-2. **Connect to Render**
+2. **Deploy Backend**
    - Go to Render Dashboard
-   - Click "New" → "Blueprint" (if using render.yaml)
-   - OR create services manually
+   - Click "New" → "Blueprint"
+   - Select your repository
+   - Deploy the backend service
 
-3. **Deploy**
-   - Render will build and deploy automatically
-   - Check logs for any issues
+3. **Deploy Frontend**
+   - Go to Render Dashboard
+   - Click "New" → "Static Site"
+   - Connect to your repository
+   - Set build command: `npm run build`
+   - Set publish directory: `dist`
+   - Add environment variable: `VITE_API_URL=https://your-backend-url.onrender.com`
 
 4. **Initialize Database**
    - SSH into your backend service or use Render shell
@@ -221,7 +214,16 @@ If you encounter issues:
 - **Uptime**: Services may sleep after inactivity
 - **Bandwidth**: Limited monthly bandwidth
 - **Build Time**: Limited build minutes per month
+- **Services**: One web service per blueprint (hence separate frontend deployment)
 
 For production use, consider upgrading to a paid plan for persistent database storage and better performance.
+
+## 🎯 Simplified Deployment Strategy
+
+**Why This Approach:**
+- **Backend**: Single web service (free tier compatible)
+- **Frontend**: Separate static site deployment (also free tier)
+- **Avoids**: Payment requirements for multiple services in one blueprint
+- **Maintains**: All functionality for academic project demonstration
 
 Happy deploying! 🚀

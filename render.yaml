@@ -1,14 +1,5 @@
 services:
   - type: web
-    name: exam-sync-frontend
-    runtime: static
-    buildCommand: npm run build
-    staticPublishPath: ./dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://exam-sync-backend.onrender.com
-
-  - type: web
     name: exam-sync-backend
     runtime: node
     buildCommand: npm install
